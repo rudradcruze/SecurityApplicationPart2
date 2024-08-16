@@ -30,6 +30,10 @@ public class UserService implements UserDetailsService {
         return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User with id " + id + " not found"));
     }
 
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElse(null);
+    }
+
     public UserDto signUp(SignUpDto signUpDto) {
         userRepository.findByEmail(signUpDto.getEmail()).ifPresent(user -> {
             throw new IllegalArgumentException("User with email " + signUpDto.getEmail() + " already exists");
@@ -37,6 +41,10 @@ public class UserService implements UserDetailsService {
         User user = modelMapper.map(signUpDto, User.class);
         user.setPassword(passwordEncoder.encode(signUpDto.getPassword()));
         return modelMapper.map(userRepository.save(user), UserDto.class);
+    }
+
+    public User save(User newUser) {
+        return userRepository.save(newUser);
     }
 }
 
