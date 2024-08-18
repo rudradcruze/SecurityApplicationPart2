@@ -6,7 +6,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface SessionService {
-    Session createSession(User user, String token);
-    Session getSessionByUserId(Long userId);
 
+    void generateNewSession(User user, String refreshToken, String accessToken);
+    void validateSession(String refreshToken);
+    void validateAccessTokenSession(String accessToken);
+    void deleteSession(String refreshToken);
+    void updateAccessToken(String refreshToken, String accessToken);
 }

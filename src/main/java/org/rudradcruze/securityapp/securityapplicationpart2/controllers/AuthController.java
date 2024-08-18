@@ -13,6 +13,7 @@ import org.rudradcruze.securityapp.securityapplicationpart2.services.UserService
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -63,6 +64,20 @@ public class AuthController {
         LoginResponseDto loginResponseDto = authService.refresh(refreshToken);
 
         return ResponseEntity.ok(loginResponseDto);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Boolean> logout(HttpServletRequest request) {
+        String refreshToken = Arrays.stream(request.getCookies())
+                .filter(cookie -> "refreshToken".equals(cookie.getName()))
+                .findFirst()
+                .map(Cookie::getValue)
+                .orElseThrow(() -> new AuthenticationServiceException("Refresh token not found inside the Cookies"));
+
+        SecurityContextHolder.clearContext();
+        authService.logout(refreshToken);
+
+        return ResponseEntity.ok(true);
     }
 
 }

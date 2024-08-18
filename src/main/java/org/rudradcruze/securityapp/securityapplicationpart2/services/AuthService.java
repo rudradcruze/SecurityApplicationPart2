@@ -28,15 +28,24 @@ public class AuthService {
         String accessToken = jwtService.generateAccessToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
 
-        return new LoginResponseDto(user.getId(), accessToken, refreshToken);
-//        sessionService.createSession(user, accessToken);
+        sessionService.generateNewSession(user, refreshToken, accessToken);
 
+        return new LoginResponseDto(user.getId(), accessToken, refreshToken);
     }
 
     public LoginResponseDto refresh(String refreshToken) {
         Long userId = jwtService.getUserIdFromToken(refreshToken);
+        sessionService.validateSession(refreshToken);
+
         User user = userService.getUserById(userId);
         String accessToken = jwtService.generateAccessToken(user);
+
+        sessionService.updateAccessToken(refreshToken, accessToken);
+
         return new LoginResponseDto(user.getId(), accessToken, refreshToken);
+    }
+
+    public void logout(String refreshToken) {
+        sessionService.deleteSession(refreshToken);
     }
 }

@@ -44,4 +44,10 @@ public class PostController {
             @RequestBody Map<String, Object> update) {
         return ResponseEntity.ok(postService.updatePartial(postId, update));
     }
+
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<Boolean> deletePost(@PathVariable Long postId) {
+        postService.deletePost(postId);
+        return ResponseEntity.ok(true);
+    }
 }

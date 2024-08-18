@@ -13,7 +13,6 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 @Builder
 public class User implements UserDetails {
 
@@ -26,8 +25,8 @@ public class User implements UserDetails {
     private String password;
     private String name;
 
-    @OneToOne(mappedBy = "user")
-    private Session session;
+    @OneToMany(mappedBy = "user")
+    private List<Session> session;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

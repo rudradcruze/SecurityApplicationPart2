@@ -1,10 +1,8 @@
 package org.rudradcruze.securityapp.securityapplicationpart2.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
@@ -14,18 +12,23 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Session {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    private String token;
+    private String refreshToken;
+    private String accessToken;
 
     @UpdateTimestamp
-    private LocalDateTime creationTime;
+    private LocalDateTime lastAccessTokenUsedTime;
+
+    @UpdateTimestamp
+    private LocalDateTime lastUsedAt;
 }
