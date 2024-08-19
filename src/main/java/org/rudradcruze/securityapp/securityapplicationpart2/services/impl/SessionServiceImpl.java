@@ -2,9 +2,11 @@ package org.rudradcruze.securityapp.securityapplicationpart2.services.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.rudradcruze.securityapp.securityapplicationpart2.entities.Session;
+import org.rudradcruze.securityapp.securityapplicationpart2.entities.SubscriptionSession;
 import org.rudradcruze.securityapp.securityapplicationpart2.entities.User;
 import org.rudradcruze.securityapp.securityapplicationpart2.repositories.SessionRepository;
 import org.rudradcruze.securityapp.securityapplicationpart2.services.SessionService;
+import org.rudradcruze.securityapp.securityapplicationpart2.services.SubscriptionSessionService;
 import org.springframework.security.web.authentication.session.SessionAuthenticationException;
 import org.springframework.stereotype.Service;
 
@@ -17,11 +19,21 @@ import java.util.List;
 public class SessionServiceImpl implements SessionService {
 
     private final SessionRepository sessionRepository;
-    private final int SESSION_LIMIT = 2;
+    private final SubscriptionSessionService sessionService;
 
     @Override
     public void generateNewSession(User user, String refreshToken, String accessToken) {
         List<Session> userSessions = sessionRepository.findByUser(user);
+
+        SubscriptionSession latestSession = sessionService.getLatestSubscriptionSession(user.getId());
+        System.out.println(latestSession);
+
+        int SESSION_LIMIT = 0;
+        if (!latestSession.getExpireDate().isBefore(LocalDateTime.now())) {
+            SESSION_LIMIT = latestSession.getSessionLimit();
+        } else {
+            throw new RuntimeException("You full fill the session limit.");
+        }
 
         if (userSessions.size() == SESSION_LIMIT) {
             userSessions.sort(Comparator.comparing(Session::getLastUsedAt));
